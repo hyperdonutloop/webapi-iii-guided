@@ -17,16 +17,16 @@ function logger(req, res, next) {
 // write a gatekeeper middleware that reads a password from headers and if pw is 'mellon', let it pass
 //if not, send back 401 + message
 function gateKeeper(req, res, next) {
-  const pw = req.headers;
+  const password = req.headers.password;
 
-  if (pw === 'mellon') {
+  if (password && password.toLowerCase() === 'mellon') {
     next();
   } else {
-    res.send(401).json({ message: 'Wrong Password' })
+    res.status(401).json({ you: 'shall not pass' })
   }
 }
 
-server.use(gateKeeper);
+
 server.use(helmet()); // use it here 2:
 server.use(express.json()); // built in middleware
 server.use(logger);
@@ -47,7 +47,7 @@ server.get('/echo', (req, res) => {
   res.send(req.headers);
 });
 
-server.get('/area51', gateKeeper(), (req, res) => { // local middlware, applies directly on the route
+server.get('/area51', gateKeeper, (req, res) => { // local middlware, applies directly on the route
   res.send(req.headers);
 });
 
